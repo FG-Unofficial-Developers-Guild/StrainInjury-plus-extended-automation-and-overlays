@@ -154,7 +154,7 @@ function parseEffectComp(s)
 	local aRemainder = {};
 	local nRemainderIndex = 1;
 	
-	local aWords, aWordStats = StringManager.parseWords(s, "/\\%.%[%]%(%):{}");
+	local aWords, aWordStats = StringManager.parseWords(s, "/\\%.%[%]%(%):{}@");
 	if #aWords > 0 then
 		sType = aWords[1]:match("^([^:]+):");
 		if sType then
@@ -320,7 +320,7 @@ end
 
 function evalAbilityHelper(rActor, sEffectAbility, nodeSpellClass)
 	-- KEL We add DCrumbs max stuff but we do it differently (espcially min is not needed)
-	local sSign, sModifier, sNumber, sTag, nMax = sEffectAbility:match("^%[([%+%-%^]*)([HTQd]?)([%d]?)([A-Z][A-Z][A-Z]?)(%d*)%]$");
+	local sSign, sModifier, sNumber, sTag, nMax = sEffectAbility:match("^%[([%+%-%^]*)([HTQd]?)([%d]?)([A-Z]+)(%d*)%]$");
 	-- KEL adding rollable stats (for damage especially)
 	-- local sSign, sDieSides = sEffectAbility:match("^%[([%-%+]?)[dD]([%dF]+)%]$");
 	local sDie, sDesc = sEffectAbility:match("^%[%s*(%S+)%s*(.*)%]$");
@@ -355,12 +355,12 @@ function evalAbilityHelper(rActor, sEffectAbility, nodeSpellClass)
 	local nAbility = nil;
 	
 	if sTag then
-		local sAbility = sTag;
+		local sAbility = DataCommon.ability_stol[sTag] or sTag;
 		nAbility = ActorManager35E.getAbilityBonus(rActor, sAbility) + ActorManager35E.getAbilityEffectsBonus(rActor, sAbility);
 	elseif IsDie then
 		nAbility = nMod;
-	-- else
-		-- return 0;
+	else
+		return 0;
 	end
 	
 	
